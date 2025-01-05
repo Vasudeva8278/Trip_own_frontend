@@ -1,0 +1,60 @@
+/* Default navbar styles */
+.navbar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "brand toggle" "nav nav";
+  }
+  
+  .navbar-brand {
+    grid-area: brand;
+  }
+  
+  .navbar-toggler {
+    grid-area: toggle;
+  }
+  
+  .navbar-collapse {
+    grid-area: nav;
+  }
+  
+  .navbar-nav {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* Adjust grid to have 5 columns */
+    gap: 20px;
+    margin-top: 10px;
+  }
+  
+  .navbar-nav .nav-item {
+    list-style: none;
+  }
+  
+  .nav-link {
+    font-size: 16px;
+    padding: 10px 15px;
+  }
+  
+  .navbar-nav .dropdown-menu {
+    min-width: 200px;
+  }
+  
+  /* Media query for mobile screens */
+  @media (max-width: 768px) {
+    .navbar-nav {
+      grid-template-columns: 1fr; /* Stack nav items vertically */
+      gap: 10px;
+    }
+  
+    .navbar {
+      grid-template-columns: 1fr; /* Make navbar items stack */
+      grid-template-areas: "brand" "toggle" "nav";
+    }
+  
+    .navbar-nav .nav-item {
+      text-align: center;
+    }
+  
+    .navbar-nav .nav-item .nav-link {
+      font-size: 14px; /* Smaller font size for mobile */
+    }
+  }
+  
