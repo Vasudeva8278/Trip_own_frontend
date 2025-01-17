@@ -24,6 +24,10 @@ const HeaderNav = () => {
             <li className="nav-item ms-3"> {/* Added margin-left */}
               <Link className="nav-link" to="/spots">Spots</Link>
             </li>
+            <li className="nav-item ms-3"> {/* Added margin-left */}
+              <Link className="nav-link" to="/myorder">My orders</Link>
+            </li>
+           
             {/* Add more nav items here with ms-3 for spacing */}
           </ul>
         </div>

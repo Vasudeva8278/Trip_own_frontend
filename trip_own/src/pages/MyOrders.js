@@ -10,6 +10,7 @@ const MyOrders = () => {
   useEffect(() => {
     // Check if the token is in localStorage when the component mounts
     const token = localStorage.getItem('jwtToken');
+    console.log('JWT Token:', token); // Log token for debugging
     if (!token) {
       setError('Please log in to view your orders');
       setLoading(false); // Stop loading as no token is found
@@ -25,7 +26,8 @@ const MyOrders = () => {
           },
         });
 
-        setOrders(response.data); // Set fetched orders
+        console.log('Bookings retrieved successfully:', response.data); // Log the response for debugging
+        setOrders(response.data.bookings); // Set fetched orders
         setLoading(false); // Stop loading
       } catch (error) {
         setError('Failed to fetch orders. Please try again later.');
@@ -47,13 +49,13 @@ const MyOrders = () => {
       ) : (
         <div className="orders-list">
           {orders.map((order) => (
-            <div key={order.id} className="order-card">
+            <div key={order._id} className="order-card">
               <div className="order-details">
-                <h3>{order.productName}</h3>
-                <p>Order ID: {order.id}</p>
+                <h3>{order.vehicles[0].vehicleId.name}</h3>
+                <p>Order ID: {order._id}</p>
                 <p>Status: {order.status}</p>
-                <p>Price: ${order.totalPrice}</p>
-                <p>Date: {new Date(order.orderDate).toLocaleDateString()}</p>
+                <p>Price: ${order.totalAmount}</p>
+                <p>Date: {new Date(order.createdAt).toLocaleDateString()}</p>
               </div>
               <div className="order-actions">
                 <button className="view-details">View Details</button>

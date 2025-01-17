@@ -120,8 +120,8 @@ const Hotels = () => {
               boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
             }}
           >
-            <h2>Login Required</h2>
-            <p>You must log in to book a hotel.</p>
+          
+         
             <button
               onClick={() => setShowLoginModal(false)}
               style={{

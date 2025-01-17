@@ -1,98 +1,105 @@
-// src/pages/SignInForm.js
 import React, { useState } from 'react';
-import axios from 'axios';  // Import axios for API requests
-import './css/signInForm.css';  // Assuming the styles are in 'src/css/signInForm.css'
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const SignInForm = ({ show, onClose }) => {
+function Signin({ setIsAuthenticated, setUsername }) {
   const [formData, setFormData] = useState({
     username: '',
     password: '',
-    confirmPassword: '',
- 
+    name: '',
+    email: '',
+    phone: '',
   });
 
-  const [error, setError] = useState('');
+  const navigate = useNavigate(); // Initialize useNavigate
 
-  // Handle form input changes
   const handleChange = (e) => {
-    const { id, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [id]: value,
-    }));
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
+    console.log('Submitting Form Data:', formData); // Log the form data
     try {
-      const response = await axios.post('http://localhost:4000/api/auth/register', {
-        username: formData.username,
-        password: formData.password,
-        email: formData.email,
-      });
+      const response = await axios.post('http://localhost:4000/api/auth/register', formData);
+      console.log('Sign-in Response:', response.data);
 
-      if (response.data.message === 'User registered successfully') {
-        alert('Registration successful');
-        onClose(); // Close the modal after successful registration
-      }
+      // Redirect to login page after successful registration
+      alert('Registration successful! Please log in.');
+      navigate('/'); // Redirect to login page
     } catch (error) {
-      console.error('Error during registration:', error.response?.data || error.message);
-      setError('Registration failed. Please try again.');
+      console.error('Sign-in failed:', error);
+      if (error.response) {
+        console.error('Server Response:', error.response.data); // Log server response for detailed debugging
+      }
+      alert('Registration failed. Please check your input and try again.');
     }
   };
 
   return (
-    <div className={`sign-in-form-container ${show ? 'show' : ''}`} onClick={onClose}>
-      <div className="sign-in-form-card" onClick={(e) => e.stopPropagation()}>
-        <div className="sign-in-header">
-          <h2>Sign Up</h2>
-          <button className="close-btn" onClick={onClose}>X</button>
-        </div>
-        <form className="sign-in-form" onSubmit={handleSubmit}>
-          <div className="input-group">
-            <label htmlFor="username">Username</label>
-            <input
-              type="text"
-              id="username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-            />
-          </div>
-       
-          <div className="input-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="input-group">
-            <label htmlFor="confirmPassword">Confirm Password</label>
-            <input
-              type="password"
-              id="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          {error && <div className="error-message">{error}</div>}
-          <button type="submit" className="submit-btn">Sign Up</button>
-        </form>
-      </div>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+        background:
+          "url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbUHIYAENLxUlVE8R_gGJE-MeG6svnRKjl3Q&s') no-repeat center center/cover",
+        position: "relative",
+      }}
+    >
+      <form onSubmit={handleSubmit}>
+        <h2>Sign In</h2>
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          value={formData.username}
+          onChange={handleChange}
+          required
+        />
+        <br></br>
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={formData.password}
+          onChange={handleChange}
+          required
+        />
+        <br></br>
+        <input
+          type="text"
+          name="name"
+          placeholder="Full Name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+        />
+        <br></br>
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+        />
+        <br></br>
+        <input
+          type="text"
+          name="phone"
+          placeholder="Phone Number"
+          value={formData.phone}
+          onChange={handleChange}
+          required
+        />
+        <br></br>
+        <button type="submit">Sign In</button>
+      </form>
     </div>
   );
-};
+}
 
-export default SignInForm;
+export default Signin;

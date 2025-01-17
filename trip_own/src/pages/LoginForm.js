@@ -1,91 +1,88 @@
 import React, { useState } from 'react';
-import axios from 'axios'; // Import axios for API requests
-import './css/loginForm.css'; // Assuming the CSS is in 'src/css/loginForm.css'
+import { useNavigate } from 'react-router-dom'; // Import for routing
+import axios from 'axios';
+import {jwtDecode} from 'jwt-decode'; // Correct import
 
-const LoginForm = ({ show, onClose, setShowSignIn, setIsLoggedIn }) => {
-  const [formData, setFormData] = useState({
-    usernameOrEmail: '',  // We combine email or username into one field
-    password: '',
-  });
+function Login({ setIsAuthenticated, setUsername }) {
+  const [formData, setFormData] = useState({ username: '', password: '' });
+  const navigate = useNavigate(); // Hook for navigation
 
-  const [error, setError] = useState('');
-
-  // Handle form input changes
   const handleChange = (e) => {
-    const { id, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [id]: value,
-    }));
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      const response = await axios.post('http://localhost:4000/api/auth/login', {
-        username: formData.usernameOrEmail,
-        password: formData.password,
-      });
+      const response = await axios.post('http://localhost:4000/api/auth/login', formData);
+      console.log('Login Response:', response.data);
+      
+      // Decode the token to get the username
+      const decodedToken = jwtDecode(response.data.token);
 
-      if (response.data.token) {
-        // Save the token to localStorage
-        localStorage.setItem('token', response.data.token);
-        setIsLoggedIn(true, formData.usernameOrEmail); // Pass username to parent (Header)
-        alert('Login successful');
-        onClose(); // Close the modal after successful login
-      }
+      // Store the username and JWT token in localStorage
+      localStorage.setItem('username', decodedToken.username);
+      localStorage.setItem('jwtToken', response.data.token);
+
+      // Set the username and authentication state
+      setUsername(decodedToken.username);
+      setIsAuthenticated(true);
+
+      // Navigate to home or dashboard
+      navigate('/');
     } catch (error) {
-      console.error('Error during login:', error.response?.data || error.message);
-      setError('Invalid credentials. Please try again.');
+      console.error('Login failed:', error);
     }
   };
 
-  return (
-    <div className={`login-form-container ${show ? 'show' : ''}`} onClick={onClose}>
-      <div className="login-form-card" onClick={(e) => e.stopPropagation()}>
-        <div className="login-header">
-          <h2>Login</h2>
-          <button className="close-btn" onClick={onClose}>X</button>
-        </div>
-        <form className="login-form" onSubmit={handleSubmit}>
-          <div className="input-group">
-            <label htmlFor="usernameOrEmail">Email or Username</label>
-            <input
-              type="text"
-              id="usernameOrEmail"
-              value={formData.usernameOrEmail}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="input-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          {error && <div className="error-message">{error}</div>}
-          <button type="submit" className="submit-btn">Login</button>
-        </form>
+  const handleSignInRedirect = () => {
+    navigate('/signin'); // Navigate to the sign-in route
+  };
 
-        <div className="signup-section">
-          <p>Don't have an account?</p>
-          <button
-            className="btn"
-            onClick={() => setShowSignIn(true)} // Trigger Sign In Form
-          >
-            Sign Up
+  return (
+    <div>
+      <div>
+        <form onSubmit={handleSubmit}>
+          <h2>Login</h2>
+          <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            value={formData.username}
+            onChange={handleChange}
+            required
+          />
+          <br />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+          <br />
+          <button type="submit" style={{ marginTop: '10px' }}>
+            Login
           </button>
-        </div>
+        </form>
+        <button
+          style={{
+            marginTop: '10px',
+            backgroundColor: 'transparent',
+            border: 'none',
+            color: 'blue',
+            textDecoration: 'underline',
+            cursor: 'pointer',
+          }}
+          onClick={handleSignInRedirect}
+        >
+          Sign In
+        </button>
       </div>
     </div>
   );
-};
+}
 
-export default LoginForm;
+export default Login;
